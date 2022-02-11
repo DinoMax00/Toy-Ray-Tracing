@@ -1,6 +1,6 @@
 # base macro
 CC = g++
-CFLAGS = -O2 -Wall -std=c++14
+CFLAGS = -g -Wall -std=c++14
 MAKE = make
 
 
@@ -10,7 +10,7 @@ MAKE = make
 subdirs: ${SUBDIRS}
 
 ${SUBDIRS}:
-	${MAKE} -C $@ all
+	@${MAKE} -C $@ all
 
 
 # recursive make clean

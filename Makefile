@@ -1,21 +1,28 @@
 # target, subdir, objects in current dir
-TARGET	= test
+TARGET	= ToyRayTracing
+PPM = ToyRayTracing
 SUBDIRS	= src
 OBJECTS	= 
 
+# get the ppm file
+all: build clean generate-ppm
 
-all:subdirs ${OBJECTS}
-	${CC} -o ${TARGET} $$(find ./${SUBDIRS} -name '*.o') ${LDFLAGS} ${INCLUDES}
+# get the executable file
+build: subdirs ${OBJECTS} 
+	${CC} -o ${TARGET} $$(find ./${SUBDIRS} -name '*.o')
 
+clean: cleansubdirs
+	rm -f ${OBJECTS}
 
-clean:cleansubdirs
-	rm -f ${TARGET} ${OBJECTS}
+generate-ppm: $(TARGET)
+	./$(TARGET) > ./output/$(PPM).ppm
+	@echo -e "\nDone! See $(PPM).ppm."
 
 
 # path of "make global scripts"
 # NOTE, use absolute path. export once, use in all subdirs
 export PROJECTPATH=${PWD}
-export MAKEINCLUDE=${PROJECTPATH}/make.global
+export MAKEINCLUDE=${PROJECTPATH}/Makefile.inc
 
 # include "make global scripts"
 include ${MAKEINCLUDE}
