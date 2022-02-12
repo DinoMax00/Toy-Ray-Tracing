@@ -5,6 +5,8 @@
 #include "color.hpp"
 #include "hittable_list.hpp"
 #include "sphere.hpp"
+#include "camera.hpp"
+
 
 // check intersection
 double hit_sphere(point center, double radius, const ray& r) {
@@ -37,6 +39,7 @@ int main() {
     constexpr double aspect_ratio = 16.0 / 9;
     constexpr int image_width = 400;
     constexpr int image_height = static_cast<int>(image_width / aspect_ratio);
+    constexpr int samples_per_pixel = 100;
 
     /// World
     hittable_list world;
@@ -44,16 +47,7 @@ int main() {
     world.add(make_shared<sphere>(point(0, -100.5, -1), 100));
 
     /// Camera
-    auto viewport_height = 2.0;
-    auto viewport_width = viewport_height * aspect_ratio;
-    // distance between eye and screen
-    auto foacl_length = 1.0;
-
-    auto ori = vec3(0, 0, 0);
-    // x-axis and y-axis
-    auto horizontal = vec3(viewport_width, 0, 0);
-    auto vertical = vec3(0, viewport_height, 0);
-    auto start_point = -(horizontal + vertical) / 2 - vec3(0, 0, foacl_length);
+    camera cam;
 
     // Render
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
@@ -61,12 +55,14 @@ int main() {
     for (int j = image_height - 1; j >= 0; --j) {
         // std::cerr << "Drawing row: " << j << std::endl;
         for (int i = 0; i < image_width; ++i) {
-            auto u = double(i) / (image_width-1);
-            auto v = double(j) / (image_height-1);
-        
-            ray r(ori, start_point + u * horizontal + v * vertical - ori);
-            color cl = ray_color(r, world);
-            put_pixel(cl);
+            color pixel_color(0, 0, 0);
+            for (int s = 0; s < samples_per_pixel; ++s) {
+                auto u = (i + random_double()) / (image_width - 1);
+                auto v = (j + random_double()) / (image_height - 1);
+                ray r = cam.get_ray(u, v);
+                pixel_color += ray_color(r, world);
+            }
+            put_pixel(pixel_color, samples_per_pixel);
         }
     }
 }

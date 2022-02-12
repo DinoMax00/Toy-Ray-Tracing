@@ -2,11 +2,21 @@
 
 #include <iostream>
 
-#include "mathlib.hpp"
+#include "rtweekend.h"
 
-void put_pixel(color cl) {
+void put_pixel(color cl, int samples_per_pixel) {
+    auto r = cl.x;
+    auto g = cl.y;
+    auto b = cl.z;
+
+    // divide the color by the number of samples
+    auto scale = 1.0 / samples_per_pixel;
+    r *= scale;
+    g *= scale;
+    b *= scale;
+
     // rgb value in range [0, 1]
-    std::cout << static_cast<int>(255.999 * cl.x) << ' '
-        << static_cast<int>(255.999 * cl.y) << ' '
-        << static_cast<int>(255.999 * cl.z) << '\n';
+    std::cout << static_cast<int>(256 * clamp(r, 0, 0.999)) << ' '
+        << static_cast<int>(256 * clamp(g, 0, 0.999)) << ' '
+        << static_cast<int>(256 * clamp(b, 0, 0.999)) << '\n';
 }
