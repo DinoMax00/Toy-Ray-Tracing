@@ -81,6 +81,14 @@ public:
     double length() const {
         return std::sqrt(x * x + y * y + z * z);
     }
+
+    inline static vec3 random() {
+        return vec3(random_double(), random_double(), random_double());
+    }
+
+    inline static vec3 random(double min, double max) {
+        return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
 };
 
 // alias
@@ -99,4 +107,24 @@ inline vec3 cross(const vec3& u, const vec3& v) {
 inline vec3 normalize(vec3 v) {
     double t = v.length();
     return v / t;
+}
+
+vec3 random_in_unit_sphere() {
+    while (true) {
+        auto p = vec3::random(-1, 1);
+        if (p.length() >= 1) continue;
+        return p;
+    }
+}
+
+vec3 random_unit_vector() {
+    return normalize(random_in_unit_sphere());
+}
+
+vec3 random_in_hemisphere(const vec3& normal) {
+    vec3 in_unit_sphere = random_in_unit_sphere();
+    if (in_unit_sphere * normal > 0.0) // In the same hemisphere as the normal
+        return in_unit_sphere;
+    else
+        return -in_unit_sphere;
 }

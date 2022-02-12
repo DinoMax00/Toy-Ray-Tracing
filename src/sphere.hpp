@@ -18,7 +18,6 @@ public:
 };
 
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
-    assert(t_min < t_max);
     vec3 temp = r.get_origin() - center;
     double a = r.get_direction() * r.get_direction();
     double b = 2 * r.get_direction() * temp;
