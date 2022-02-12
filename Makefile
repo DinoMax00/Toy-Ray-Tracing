@@ -16,7 +16,7 @@ clean: cleansubdirs
 
 generate-ppm: $(TARGET)
 	./$(TARGET) > ./output/$(PPM).ppm
-	@echo -e "\nDone! See $(PPM).ppm."
+	@echo -e "\nDone! See $(PPM).ppm.\n"
 
 
 # path of "make global scripts"

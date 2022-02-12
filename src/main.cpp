@@ -1,8 +1,10 @@
 #include <iostream>
 
-#include "mathlib.hpp"
+#include "rtweekend.h"
+
 #include "color.hpp"
-#include "ray.hpp"
+#include "hittable_list.hpp"
+#include "sphere.hpp"
 
 // check intersection
 double hit_sphere(point center, double radius, const ray& r) {
@@ -18,15 +20,14 @@ double hit_sphere(point center, double radius, const ray& r) {
     }
 }
 
-color ray_color(ray& r) {
-    double t = hit_sphere(point(0, 0, -1), 0.5, r);
-    if (t > 0) {
-        vec3 n = normalize(r.get_point(t) - vec3(0, 0, -1));
-        return 0.5 * color(n.x + 1, n.y + 1, n.z + 1);
+color ray_color(ray& r, const hittable& world) {
+    hit_record rec;
+    if (world.hit(r, 0, infinity, rec)) {
+        return 0.5 * (rec.normal + color(1, 1, 1));
     }
 
     vec3 unit_direction = normalize(r.get_direction());
-    t = 0.5 * (unit_direction.y + 1.0);
+    auto t = 0.5 * (unit_direction.y + 1.0);
     return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
 
@@ -36,6 +37,11 @@ int main() {
     constexpr double aspect_ratio = 16.0 / 9;
     constexpr int image_width = 400;
     constexpr int image_height = static_cast<int>(image_width / aspect_ratio);
+
+    /// World
+    hittable_list world;
+    world.add(make_shared<sphere>(point(0, 0, -1), 0.5));
+    world.add(make_shared<sphere>(point(0, -100.5, -1), 100));
 
     /// Camera
     auto viewport_height = 2.0;
@@ -59,7 +65,7 @@ int main() {
             auto v = double(j) / (image_height-1);
         
             ray r(ori, start_point + u * horizontal + v * vertical - ori);
-            color cl = ray_color(r);
+            color cl = ray_color(r, world);
             put_pixel(cl);
         }
     }
