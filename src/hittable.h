@@ -1,6 +1,9 @@
 #pragma once
 
 #include "ray.hpp"
+#include "rtweekend.h"
+
+class material;
 
 /// An Abstraction for hittable objects
 
@@ -9,6 +12,7 @@ class hit_record {
 public:
     point p; // intersection
     vec3 normal; // normal direction, always against the ray direction
+    shared_ptr<material> mat_ptr;
     double t; // record the ray information
     bool front_face; // true if the ray come from the outside to inside
 

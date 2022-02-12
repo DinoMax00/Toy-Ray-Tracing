@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hittable.hpp"
+#include "hittable.h"
 #include "mathlib.hpp"
 
 
@@ -9,10 +9,12 @@ class sphere: public hittable {
 private:
     point center;
     double radius;
+    shared_ptr<material> mat_ptr;
 
 public:
     sphere() {}
-    sphere(point c, double r): center(c), radius(r) {}
+    sphere(point c, double r, shared_ptr<material> m): 
+    center(c), radius(r),  mat_ptr(m) {}
 
     virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
 };
@@ -39,6 +41,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
     rec.p = r.get_point(root);
     auto outward_normal = (rec.p - center) / radius;
     rec.set_face_normal(r, outward_normal);
+    rec.mat_ptr = mat_ptr;
 
     return true;
 }

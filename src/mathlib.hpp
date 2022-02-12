@@ -89,6 +89,11 @@ public:
     inline static vec3 random(double min, double max) {
         return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
+
+    bool near_zero() const {
+        constexpr double eps = 1e-8;
+        return (fabs(x) < eps) && (fabs(y) < eps) && (fabs(z) < eps);
+    }
 };
 
 // alias
@@ -127,4 +132,12 @@ vec3 random_in_hemisphere(const vec3& normal) {
         return in_unit_sphere;
     else
         return -in_unit_sphere;
+}
+
+vec3 reflect(const vec3& v, const vec3& n) {
+    return v - 2 * v * n * n;
+}
+
+vec3 inner_mult(const vec3& u, const vec3& v) {
+    return vec3(u.x * v.x, u.y * v.y, u.z * v.z);
 }

@@ -6,7 +6,7 @@
 #include "hittable_list.hpp"
 #include "sphere.hpp"
 #include "camera.hpp"
-
+#include "material.hpp"
 
 // check intersection
 double hit_sphere(point center, double radius, const ray& r) {
@@ -29,8 +29,12 @@ color ray_color(const ray& r, const hittable& world, int depth) {
         return color(0, 0, 0);
 
     if (world.hit(r, 0.001, infinity, rec)) {
-        point target = rec.p + rec.normal + random_unit_vector(); // random_in_hemisphere(rec.normal);
-        return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
+        ray ray_out;
+        color attenuation;
+        if (rec.mat_ptr->scatter(r, rec, attenuation, ray_out)) {
+            return inner_mult(attenuation, ray_color(ray_out, world, depth - 1));
+        }
+        return color(0, 0, 0);
     }
 
     vec3 unit_direction = normalize(r.get_direction());
@@ -49,8 +53,16 @@ int main() {
 
     /// World
     hittable_list world;
-    world.add(make_shared<sphere>(point(0, 0, -1), 0.5));
-    world.add(make_shared<sphere>(point(0, -100.5, -1), 100));
+    
+    auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
+    auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
+    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
+
+    world.add(make_shared<sphere>(point( 0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(point( 0.0,    0.0, -1.0),   0.5, material_center));
+    world.add(make_shared<sphere>(point(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.add(make_shared<sphere>(point( 1.0,    0.0, -1.0),   0.5, material_right));
 
     /// Camera
     camera cam;
@@ -59,7 +71,7 @@ int main() {
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
     for (int j = image_height - 1; j >= 0; --j) {
-        std::cerr << "Drawing row: " << j << std::endl;
+        if (j % 32 == 0) std::cerr << "Drawing row: " << j << std::endl;
         for (int i = 0; i < image_width; ++i) {
             color pixel_color(0, 0, 0);
             for (int s = 0; s < samples_per_pixel; ++s) {
@@ -71,4 +83,6 @@ int main() {
             put_pixel(pixel_color, samples_per_pixel);
         }
     }
+
+    return 0;
 }

@@ -10,6 +10,7 @@ private:
     vec3 dir;
 
 public:
+    ray() {}
     ray(point _ori, vec3 _dir): ori(_ori), dir(_dir) {}
 
     void set_origin(point p) { ori = p; }
