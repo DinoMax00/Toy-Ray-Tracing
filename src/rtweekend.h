@@ -16,7 +16,7 @@ using std::sqrt;
 
 /// constants
 const double infinity = std::numeric_limits<double>::infinity();
-const double pi = cos(-1);
+const double pi = acos(-1);
 
 
 /// utility functions
