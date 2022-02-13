@@ -141,3 +141,10 @@ vec3 reflect(const vec3& v, const vec3& n) {
 vec3 inner_mult(const vec3& u, const vec3& v) {
     return vec3(u.x * v.x, u.y * v.y, u.z * v.z);
 }
+
+vec3 refract(const vec3& r, const vec3& normal, double n) {
+    double cos_theta = fmin(-r * normal, 1.0);
+    vec3 r_perp = n * (r + cos_theta * normal);
+    vec3 r_parallel = -sqrt(fabs(1.0 - r_perp.length() * r_perp.length())) * normal;
+    return r_perp + r_parallel;
+}
